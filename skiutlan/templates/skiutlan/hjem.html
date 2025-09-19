@@ -1,0 +1,305 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Hjem - Skiutlån System{% endblock %}
+
+{% block header %}
+<div class="row">
+    <div class="col">
+        <h1 class="display-4">
+            <i class="bi bi-snow text-primary"></i>
+            Skiutlån System
+        </h1>
+        <p class="lead text-muted">
+            Velkommen til vårt utlånssystem for skiumstyr.
+            Her kan du administrere ski, brukere og utlån enkelt og effektivt.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+    Hjemside/Dashboard for skiutlån-systemet.
+
+    TODO for gruppen:
+    1. Implementer statistikk-kort (se context data i views.py)
+    2. Legg til quick actions (hurtig-knapper)
+    3. Vis nylige aktiviteter
+    4. Legg til varslinger for forsinket utlån
+    5. Forbedre design og layout
+-->
+
+<!-- Quick Statistics Cards -->
+<div class="row mb-4">
+    <!-- Total Ski Items -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ totalt_ski_items|default:0 }}</h3>
+                        <p class="card-text">Totalt ski-utstyr</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-snow fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'skiutlan:ski_item_liste' %}" class="text-white text-decoration-none">
+                    <small>Se alle <i class="bi bi-arrow-right"></i></small>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Items -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ ledige_items|default:0 }}</h3>
+                        <p class="card-text">Ledige items</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <!-- TODO: Legg til link til ledige items -->
+                <small>Tilgjengelig for utlån</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Loans -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ aktive_utlan|default:0 }}</h3>
+                        <p class="card-text">Aktive utlån</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-left-right fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'skiutlan:utlan_liste' %}" class="text-dark text-decoration-none">
+                    <small>Se alle utlån <i class="bi bi-arrow-right"></i></small>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Loans -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3 class="card-title">{{ forsinket_utlan|length|default:0 }}</h3>
+                        <p class="card-text">Forsinket</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <!-- TODO: Legg til link til forsinket utlån -->
+                <small>Krever oppmerksomhet</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i>
+                    Hurtighandlinger
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'skiutlan:utlan_opprett' %}" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle"></i>
+                            Nytt utlån
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'skiutlan:ski_item_opprett' %}" class="btn btn-success w-100">
+                            <i class="bi bi-plus-square"></i>
+                            Legg til ski-utstyr
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'skiutlan:bruker_opprett' %}" class="btn btn-info w-100">
+                            <i class="bi bi-person-plus"></i>
+                            Ny bruker
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity and Alerts -->
+<div class="row">
+    <!-- Recent Loans -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Nylige utlån
+                </h5>
+                <a href="{% url 'skiutlan:utlan_liste' %}" class="btn btn-sm btn-outline-primary">Se alle</a>
+            </div>
+            <div class="card-body">
+                {% if nylige_utlan %}
+                    <div class="list-group list-group-flush">
+                        {% for utlan in nylige_utlan %}
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">{{ utlan.ski_item.navn }}</div>
+                                    <small class="text-muted">
+                                        {{ utlan.bruker.fullt_navn }} -
+                                        {{ utlan.utlant_dato|date:"d.m.Y H:i" }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-{% if utlan.er_aktivt %}warning{% else %}secondary{% endif %} rounded-pill">
+                                    {% if utlan.er_aktivt %}Aktiv{% else %}Returnert{% endif %}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Ingen nylige utlån å vise.</p>
+                    <!-- TODO: Implementer data i views.py -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Loans Alert -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Forsinket utlån
+                </h5>
+                <!-- TODO: Legg til link til forsinket-filter -->
+            </div>
+            <div class="card-body">
+                {% if forsinket_utlan %}
+                    <div class="list-group list-group-flush">
+                        {% for utlan in forsinket_utlan %}
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold text-danger">{{ utlan.ski_item.navn }}</div>
+                                    <small class="text-muted">
+                                        {{ utlan.bruker.fullt_navn }} -
+                                        Skulle vært returnert {{ utlan.planlagt_retur|date:"d.m.Y" }}
+                                    </small>
+                                </div>
+                                <a href="{% url 'skiutlan:utlan_detalj' utlan.id %}" class="btn btn-sm btn-outline-danger">
+                                    Kontakt
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-success">
+                        <i class="bi bi-check-circle fs-1"></i>
+                        <p class="mt-2">Ingen forsinket utlån! 🎉</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status (TODO for gruppen - avansert) -->
+<!--
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Systemstatus
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-database text-success me-2"></i>
+                            <span>Database: <span class="text-success">Online</span></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-server text-success me-2"></i>
+                            <span>Server: <span class="text-success">Normal</span></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-check text-success me-2"></i>
+                            <span>Backup: <span class="text-success">OK</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // TODO for gruppen: Legg til JavaScript for hjemmesiden
+
+    // Eksempel: Auto-refresh statistikk hver 30 sekunder
+    /*
+    setInterval(function() {
+        // AJAX kall for å oppdatere statistikk
+        fetch('/api/statistikk/')
+            .then(response => response.json())
+            .then(data => {
+                // Oppdater statistikk-kort
+            });
+    }, 30000);
+    */
+
+    // Eksempel: Vis toast notification for nye utlån
+    /*
+    function visNotification(melding) {
+        var toastHTML = `
+            <div class="toast" role="alert">
+                <div class="toast-header">
+                    <strong class="me-auto">Skiutlån System</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${melding}</div>
+            </div>
+        `;
+        // Vis toast
+    }
+    */
+</script>
+{% endblock %}

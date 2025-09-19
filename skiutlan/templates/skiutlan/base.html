@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="no">
+<!--
+    Base template for skiutlån-systemet.
+
+    Dette er hovedtemplaten som alle andre templates arver fra.
+    Den inneholder felles HTML-struktur, CSS og JavaScript.
+
+    TODO for gruppen:
+    1. Tilpass design og farger
+    2. Legg til mer avansert navigation
+    3. Implementer brukerinnlogging (valgfritt)
+    4. Legg til footer med kontaktinfo
+    5. Optimalisere for mobile enheter (responsive design)
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Skiutlån System{% endblock %}</title>
+
+    <!-- Bootstrap CSS for moderne styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- TODO for gruppen: Legg til custom CSS -->
+    <style>
+        /* Custom CSS for skiutlån-systemet */
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .btn-custom {
+            /* TODO: Legg til custom button styling */
+        }
+
+        .sidebar {
+            /* TODO: Styling for sidebar hvis dere vil ha en */
+        }
+
+        /* Status badges */
+        .badge-ledig { background-color: var(--success-color); }
+        .badge-utlant { background-color: var(--warning-color); }
+        .badge-forsinket { background-color: var(--danger-color); }
+
+        /* TODO for gruppen: Legg til mer custom styling */
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <!-- Logo/Brand -->
+            <a class="navbar-brand" href="{% url 'skiutlan:hjem' %}">
+                <i class="bi bi-snow"></i>
+                Skiutlån System
+            </a>
+
+            <!-- Mobile menu toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'skiutlan:hjem' %}">
+                            <i class="bi bi-house"></i> Hjem
+                        </a>
+                    </li>
+
+                    <!-- Ski-items dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-snow"></i> Ski-utstyr
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:ski_item_liste' %}">Vis alle</a></li>
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:ski_item_opprett' %}">Legg til nytt</a></li>
+                            <!-- TODO: Legg til flere shortcuts -->
+                            <!-- <li><hr class="dropdown-divider"></li> -->
+                            <!-- <li><a class="dropdown-item" href="#">Bare ledige</a></li> -->
+                        </ul>
+                    </li>
+
+                    <!-- Brukere dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-people"></i> Brukere
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:bruker_liste' %}">Vis alle</a></li>
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:bruker_opprett' %}">Ny bruker</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Utlån dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-arrow-left-right"></i> Utlån
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:utlan_liste' %}">Vis alle</a></li>
+                            <li><a class="dropdown-item" href="{% url 'skiutlan:utlan_opprett' %}">Nytt utlån</a></li>
+                            <!-- TODO: Legg til flere shortcuts -->
+                            <!-- <li><hr class="dropdown-divider"></li> -->
+                            <!-- <li><a class="dropdown-item" href="#">Aktive utlån</a></li> -->
+                            <!-- <li><a class="dropdown-item" href="#">Forsinket utlån</a></li> -->
+                        </ul>
+                    </li>
+
+                    <!-- Søk og rapporter -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'skiutlan:avansert_sok' %}">
+                            <i class="bi bi-search"></i> Søk
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'skiutlan:rapporter' %}">
+                            <i class="bi bi-graph-up"></i> Rapporter
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Right side navigation -->
+                <ul class="navbar-nav">
+                    <!-- TODO for gruppen: Legg til brukerinnlogging -->
+                    <!-- <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/">Django Admin</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Logg ut</a></li>
+                        </ul>
+                    </li> -->
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/" target="_blank">
+                            <i class="bi bi-gear"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Django Messages Framework -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <strong>
+                        {% if message.tags == 'error' %}
+                            <i class="bi bi-exclamation-triangle"></i> Feil:
+                        {% elif message.tags == 'warning' %}
+                            <i class="bi bi-exclamation-circle"></i> Advarsel:
+                        {% elif message.tags == 'success' %}
+                            <i class="bi bi-check-circle"></i> Suksess:
+                        {% else %}
+                            <i class="bi bi-info-circle"></i> Info:
+                        {% endif %}
+                    </strong>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Page Header -->
+        {% block header %}{% endblock %}
+
+        <!-- Main Content Area -->
+        {% block content %}
+        <div class="text-center">
+            <h1>Velkommen til Skiutlån System</h1>
+            <p class="lead">Dette er base templaten - sett inn innhold i content blokken.</p>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Skiutlån System</h6>
+                    <p class="text-muted small">
+                        Utviklet som skoleprosjekt for IT2
+                        <!-- TODO: Legg til deres navn og klasse -->
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        <!-- TODO: Legg til kontaktinfo eller andre relevante lenker -->
+                        <a href="/admin/" class="text-decoration-none">Admin Panel</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // TODO for gruppen: Legg til custom JavaScript funksjoner
+
+        // Eksempel: Automatisk skjul success meldinger etter 5 sekunder
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert-success');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+
+        // TODO: Legg til AJAX funksjoner for dynamisk oppdatering
+        // TODO: Legg til form validering på klient-side
+        // TODO: Legg til søke-autocomplete
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+<!--
+TODO for gruppen - Forbedringer:
+
+1. Design og styling:
+   - Velg egne farger og theme
+   - Legg til logo eller banner
+   - Forbedre responsive design for mobil
+
+2. Navigasjon:
+   - Legg til breadcrumbs
+   - Aktiv side highlighting
+   - Keyboard shortcuts
+
+3. Brukeropplevelse:
+   - Loading spinners
+   - Confirmation dialogs
+   - Better error handling
+   - Progress bars
+
+4. Tilgjengelighet:
+   - ARIA labels
+   - Better contrast
+   - Keyboard navigation
+
+5. Performance:
+   - Lazy loading
+   - Caching
+   - Minified assets
+-->

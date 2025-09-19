@@ -1,0 +1,343 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}{{ action }} - Skiutlån System{% endblock %}
+
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1>
+            <i class="bi bi-{% if ski_item %}pencil{% else %}plus-circle{% endif %} text-primary"></i>
+            {{ action }}
+        </h1>
+        <p class="lead text-muted">
+            {% if ski_item %}
+                Rediger informasjonen for "{{ ski_item.navn }}"
+            {% else %}
+                Fyll ut informasjonen for det nye ski-utstyret
+            {% endif %}
+        </p>
+    </div>
+    <div>
+        <a href="{% url 'skiutlan:ski_item_liste' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Tilbake til liste
+        </a>
+        {% if ski_item %}
+            <a href="{% url 'skiutlan:ski_item_detalj' ski_item.id %}" class="btn btn-outline-info">
+                <i class="bi bi-eye"></i>
+                Vis detaljer
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+    Skjema for opprettelse og redigering av ski-items.
+
+    TODO for gruppen:
+    1. Implementer form-logikk i views.py
+    2. Legg til client-side validering
+    3. Forbedre brukeropplevelse med live feedback
+    4. Legg til mulighet for å laste opp bilder
+    5. Implementer auto-lagring (draft)
+-->
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Ski-utstyr informasjon
+                </h5>
+            </div>
+            <div class="card-body">
+                {% comment %}
+                TODO for gruppen: Implementer form i views.py først
+                {% endcomment %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Basic Information Section -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-muted border-bottom pb-2">Grunnleggende informasjon</legend>
+
+                        <!-- Navn Field -->
+                        <div class="mb-3">
+                            <label for="id_navn" class="form-label required">
+                                Navn på ski-utstyr <span class="text-danger">*</span>
+                            </label>
+                            {% comment %}
+                            TODO: Implementer når form er klart
+                            {{ form.navn }}
+                            {% if form.navn.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.navn.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% endcomment %}
+                            <input type="text"
+                                   class="form-control"
+                                   id="id_navn"
+                                   name="navn"
+                                   placeholder="F.eks. Rossignol Hero Elite eller Alpina Alaska"
+                                   required>
+                            <div class="form-text">
+                                Skriv inn merke og modell for enkelt identifikasjon
+                            </div>
+                        </div>
+
+                        <!-- Type Field -->
+                        <div class="mb-3">
+                            <label for="id_type_ski" class="form-label required">
+                                Type ski-utstyr <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="id_type_ski" name="type_ski" required>
+                                <option value="">Velg type...</option>
+                                <option value="alpinski">Alpinski</option>
+                                <option value="langrenn">Langrennsski</option>
+                                <option value="snowboard">Snowboard</option>
+                                <option value="stovler">Skistøvler</option>
+                                <option value="staver">Skistaver</option>
+                            </select>
+                            <div class="form-text">
+                                Velg riktig kategori for utstyret
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Physical Properties Section -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-muted border-bottom pb-2">Fysiske egenskaper</legend>
+
+                        <!-- Størrelse Field -->
+                        <div class="mb-3">
+                            <label for="id_storrelse" class="form-label required">
+                                Størrelse <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number"
+                                       class="form-control"
+                                       id="id_storrelse"
+                                       name="storrelse"
+                                       min="1"
+                                       max="300"
+                                       placeholder="180"
+                                       required>
+                                <span class="input-group-text" id="size-unit">cm</span>
+                            </div>
+                            <div class="form-text">
+                                <span id="size-help">Størrelse i centimeter for ski/staver, EU-størrelse for støvler</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Condition Section -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-muted border-bottom pb-2">Tilstand og status</legend>
+
+                        <!-- Tilstand Field -->
+                        <div class="mb-3">
+                            <label for="id_tilstand" class="form-label">
+                                Tilstand
+                            </label>
+                            <select class="form-select" id="id_tilstand" name="tilstand">
+                                <option value="utmerket">Utmerket - Som ny</option>
+                                <option value="god" selected>God - Mindre bruksspor</option>
+                                <option value="slitt">Slitt - Tydelige bruksspor</option>
+                                <option value="reparasjon">Trenger reparasjon</option>
+                            </select>
+                            <div class="form-text">
+                                Vurder tilstanden realistisk for trygg utlån
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- TODO: Legg til flere seksjoner -->
+                    <!--
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-muted border-bottom pb-2">Tilleggsinformasjon</legend>
+
+                        <div class="mb-3">
+                            <label for="id_arsmodell" class="form-label">Årsmodell</label>
+                            <input type="number" class="form-control" id="id_arsmodell" name="arsmodell" min="1990" max="2024">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_farge" class="form-label">Farge</label>
+                            <input type="text" class="form-control" id="id_farge" name="farge" placeholder="F.eks. Rød/svart">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_kommentar" class="form-label">Kommentar</label>
+                            <textarea class="form-control" id="id_kommentar" name="kommentar" rows="3"
+                                      placeholder="Eventuelle merknader..."></textarea>
+                        </div>
+                    </fieldset>
+                    -->
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Felter merket med <span class="text-danger">*</span> er påkrevd
+                            </small>
+                        </div>
+                        <div>
+                            <a href="{% url 'skiutlan:ski_item_liste' %}" class="btn btn-secondary me-2">
+                                <i class="bi bi-x-circle"></i>
+                                Avbryt
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-{% if ski_item %}check-circle{% else %}plus-circle{% endif %}"></i>
+                                {% if ski_item %}Oppdater{% else %}Opprett{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-question-circle"></i>
+                    Hjelpetips
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Navn</h6>
+                        <ul class="small text-muted">
+                            <li>Bruk merke og modellnavn</li>
+                            <li>F.eks. "Rossignol Hero Elite"</li>
+                            <li>Unngå forkortelser</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Størrelse</h6>
+                        <ul class="small text-muted">
+                            <li>Alpinski: 120-200 cm</li>
+                            <li>Langrenn: 150-210 cm</li>
+                            <li>Støvler: EU-størrelse (35-50)</li>
+                            <li>Staver: 80-140 cm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // TODO for gruppen: JavaScript for form-forbedringer
+
+    // Dynamisk oppdatering av størrelsesenheter
+    document.getElementById('id_type_ski').addEventListener('change', function() {
+        const sizeUnit = document.getElementById('size-unit');
+        const sizeHelp = document.getElementById('size-help');
+        const sizeInput = document.getElementById('id_storrelse');
+
+        switch(this.value) {
+            case 'stovler':
+                sizeUnit.textContent = 'EU';
+                sizeHelp.textContent = 'EU-størrelse (vanligvis 35-50)';
+                sizeInput.min = 20;
+                sizeInput.max = 50;
+                sizeInput.placeholder = '42';
+                break;
+            case 'alpinski':
+                sizeUnit.textContent = 'cm';
+                sizeHelp.textContent = 'Lengde i centimeter (vanligvis 120-200 cm)';
+                sizeInput.min = 120;
+                sizeInput.max = 200;
+                sizeInput.placeholder = '170';
+                break;
+            case 'langrenn':
+                sizeUnit.textContent = 'cm';
+                sizeHelp.textContent = 'Lengde i centimeter (vanligvis 150-210 cm)';
+                sizeInput.min = 150;
+                sizeInput.max = 210;
+                sizeInput.placeholder = '180';
+                break;
+            case 'snowboard':
+                sizeUnit.textContent = 'cm';
+                sizeHelp.textContent = 'Lengde i centimeter (vanligvis 130-170 cm)';
+                sizeInput.min = 130;
+                sizeInput.max = 170;
+                sizeInput.placeholder = '155';
+                break;
+            case 'staver':
+                sizeUnit.textContent = 'cm';
+                sizeHelp.textContent = 'Lengde i centimeter (vanligvis 80-140 cm)';
+                sizeInput.min = 80;
+                sizeInput.max = 140;
+                sizeInput.placeholder = '120';
+                break;
+            default:
+                sizeUnit.textContent = 'cm';
+                sizeHelp.textContent = 'Størrelse i centimeter for ski/staver, EU-størrelse for støvler';
+                sizeInput.min = 1;
+                sizeInput.max = 300;
+                sizeInput.placeholder = '';
+        }
+    });
+
+    // Form validering
+    (function() {
+        'use strict';
+
+        // TODO: Implementer custom validering
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        }, false);
+
+        // TODO: Live validering under skriving
+        /*
+        document.getElementById('id_navn').addEventListener('blur', function() {
+            if (this.value.trim().length < 3) {
+                this.setCustomValidity('Navnet må være minst 3 tegn langt');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        */
+    })();
+
+    // Auto-lagring (draft) - avansert funksjon
+    /*
+    let autoSaveTimeout;
+    const formElements = document.querySelectorAll('input, select, textarea');
+
+    formElements.forEach(element => {
+        element.addEventListener('input', function() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(saveAsDraft, 2000);
+        });
+    });
+
+    function saveAsDraft() {
+        const formData = new FormData(document.querySelector('form'));
+        // Lagre til localStorage eller send til server
+        console.log('Auto-lagrer draft...');
+    }
+    */
+</script>
+{% endblock %}

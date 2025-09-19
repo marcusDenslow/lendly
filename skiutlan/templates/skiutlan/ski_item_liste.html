@@ -1,0 +1,316 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Ski-utstyr - Skiutlån System{% endblock %}
+
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1>
+            <i class="bi bi-snow text-primary"></i>
+            Ski-utstyr
+        </h1>
+        <p class="lead text-muted">Oversikt over alt ski-utstyr i systemet</p>
+    </div>
+    <div>
+        <a href="{% url 'skiutlan:ski_item_opprett' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Legg til nytt
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!--
+    Liste over ski-items med søk og filtrering.
+
+    TODO for gruppen:
+    1. Implementer søkefunksjonalitet i views.py
+    2. Legg til sortering på kolonner
+    3. Implementer paginering for mange items
+    4. Legg til bulk-operasjoner (slett flere, endre tilstand)
+    5. Forbedre design og responsivitet
+-->
+
+<!-- Search and Filter Bar -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <!-- Search Text -->
+            <div class="col-md-4">
+                <label for="sok" class="form-label">Søk</label>
+                <input type="text"
+                       class="form-control"
+                       id="sok"
+                       name="sok"
+                       value="{{ sok_tekst }}"
+                       placeholder="Søk etter navn eller type...">
+            </div>
+
+            <!-- Type Filter -->
+            <div class="col-md-3">
+                <label for="type" class="form-label">Type</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">Alle typer</option>
+                    {% for value, label in ski_types %}
+                        <option value="{{ value }}" {% if type_filter == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Condition Filter -->
+            <div class="col-md-3">
+                <label for="tilstand" class="form-label">Tilstand</label>
+                <select class="form-select" id="tilstand" name="tilstand">
+                    <option value="">Alle tilstander</option>
+                    <!-- TODO: Implementer tilstand choices i views.py -->
+                    <option value="utmerket" {% if tilstand_filter == "utmerket" %}selected{% endif %}>Utmerket</option>
+                    <option value="god" {% if tilstand_filter == "god" %}selected{% endif %}>God</option>
+                    <option value="slitt" {% if tilstand_filter == "slitt" %}selected{% endif %}>Slitt</option>
+                    <option value="reparasjon" {% if tilstand_filter == "reparasjon" %}selected{% endif %}>Trenger reparasjon</option>
+                </select>
+            </div>
+
+            <!-- Available Only -->
+            <div class="col-md-2">
+                <label class="form-label d-block">&nbsp;</label>
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="ledig"
+                           name="ledig"
+                           value="1"
+                           {% if bare_ledige %}checked{% endif %}>
+                    <label class="form-check-label" for="ledig">
+                        Bare ledige
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-sm mt-1">
+                    <i class="bi bi-search"></i> Søk
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <span class="text-muted">
+            Viser {{ ski_items|length }} ski-element{% if ski_items|length != 1 %}er{% endif %}
+            {% if sok_tekst %}for søket "{{ sok_tekst }}"{% endif %}
+        </span>
+    </div>
+    <div>
+        <!-- TODO: Legg til sortering -->
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary">
+                <i class="bi bi-grid"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Ski Items List -->
+{% if ski_items %}
+    <!-- Desktop Table View -->
+    <div class="card d-none d-md-block">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <!-- TODO: Legg til sortering på kolonner -->
+                        <th>Navn</th>
+                        <th>Type</th>
+                        <th>Størrelse</th>
+                        <th>Tilstand</th>
+                        <th>Status</th>
+                        <th>Opprettet</th>
+                        <th class="text-end">Handlinger</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ski_items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.navn }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ item.get_type_ski_display }}</span>
+                            </td>
+                            <td>
+                                {{ item.storrelse }}
+                                {% if item.type_ski == "stovler" %}(EU){% else %}cm{% endif %}
+                            </td>
+                            <td>
+                                <span class="badge
+                                    {% if item.tilstand == 'utmerket' %}bg-success
+                                    {% elif item.tilstand == 'god' %}bg-primary
+                                    {% elif item.tilstand == 'slitt' %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ item.get_tilstand_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% comment %}
+                                TODO: Implementer er_ledig property i models.py
+                                {% if item.er_ledig %}
+                                    <span class="badge bg-success">Ledig</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Utlånt</span>
+                                {% endif %}
+                                {% endcomment %}
+                                <span class="badge bg-secondary">Ukjent</span>
+                            </td>
+                            <td class="text-muted">
+                                {{ item.opprettet|date:"d.m.Y" }}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'skiutlan:ski_item_detalj' item.id %}"
+                                       class="btn btn-outline-primary"
+                                       title="Vis detaljer">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'skiutlan:ski_item_rediger' item.id %}"
+                                       class="btn btn-outline-secondary"
+                                       title="Rediger">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% comment %}
+                                    TODO: Implementer lån-ut direkte fra liste
+                                    {% if item.er_ledig %}
+                                        <a href="{% url 'skiutlan:utlan_opprett_for_item' item.id %}"
+                                           class="btn btn-outline-success"
+                                           title="Lån ut">
+                                            <i class="bi bi-arrow-right-circle"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% endcomment %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                Ingen ski-elementer funnet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-md-none">
+        {% for item in ski_items %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title">{{ item.navn }}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    {{ item.get_type_ski_display }} -
+                                    {{ item.storrelse }}{% if item.type_ski == "stovler" %}(EU){% else %}cm{% endif %}
+                                </small>
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-secondary mb-1">{{ item.get_tilstand_display }}</span><br>
+                            <!-- TODO: Status badge -->
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small class="text-muted">{{ item.opprettet|date:"d.m.Y" }}</small>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'skiutlan:ski_item_detalj' item.id %}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'skiutlan:ski_item_rediger' item.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- TODO: Paginering -->
+    <!--
+    <nav aria-label="Paginering">
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="#">Forrige</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Neste</a></li>
+        </ul>
+    </nav>
+    -->
+
+{% else %}
+    <!-- Empty State -->
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-snow text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">Ingen ski-utstyr funnet</h4>
+            <p class="text-muted">
+                {% if sok_tekst or type_filter or tilstand_filter or bare_ledige %}
+                    Prøv å justere søkekriteriene dine.
+                {% else %}
+                    Kom i gang ved å legge til ditt første ski-utstyr.
+                {% endif %}
+            </p>
+            <a href="{% url 'skiutlan:ski_item_opprett' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Legg til ski-utstyr
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // TODO for gruppen: JavaScript for liste-funksjonalitet
+
+    // Auto-submit søk ved endring (debounced)
+    /*
+    let searchTimeout;
+    document.getElementById('sok').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            this.form.submit();
+        }, 500);
+    });
+    */
+
+    // Bulk selection
+    /*
+    function toggleAllSelection() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const masterCheckbox = document.getElementById('select-all');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = masterCheckbox.checked;
+        });
+    }
+    */
+
+    // Quick filter buttons
+    /*
+    function setQuickFilter(type) {
+        document.getElementById('type').value = type;
+        document.getElementById('ledig').checked = true;
+        document.querySelector('form').submit();
+    }
+    */
+</script>
+{% endblock %}

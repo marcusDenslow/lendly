@@ -1,0 +1,425 @@
+/*
+ * Custom CSS for Skiutlån-systemet
+ *
+ * TODO for gruppen:
+ * 1. Tilpass farger og design til deres smak
+ * 2. Legg til animasjoner og hover-effekter
+ * 3. Forbedre responsive design
+ * 4. Legg til dark mode (avansert)
+ * 5. Optimalisere for print (reports)
+ */
+
+/* ============================================================================
+   ROOT VARIABLES - Endre disse for å tilpasse hele designet
+   ============================================================================ */
+:root {
+    /* Hovedfarger */
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+
+    /* Bakgrunnsfarger */
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --bg-dark: #212529;
+
+    /* Tekstfarger */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+
+    /* Ski-spesifikke farger */
+    --ski-alpine: #e3f2fd;
+    --ski-nordic: #f3e5f5;
+    --ski-snowboard: #fff3e0;
+    --ski-boots: #f1f8e9;
+    --ski-poles: #fce4ec;
+
+    /* Shadows og borders */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --border-radius: 0.375rem;
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ============================================================================ */
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    background-color: var(--bg-light);
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   NAVIGATION STYLES
+   ============================================================================ */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color) !important;
+}
+
+.navbar-brand i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+/* ============================================================================
+   CARD STYLES
+   ============================================================================ */
+.card {
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+/* ============================================================================
+   BUTTON STYLES
+   ============================================================================ */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* ============================================================================
+   SKI-TYPE SPECIFIC STYLES
+   ============================================================================ */
+.ski-type-alpinski {
+    border-left: 4px solid #2196f3;
+    background-color: var(--ski-alpine);
+}
+
+.ski-type-langrenn {
+    border-left: 4px solid #9c27b0;
+    background-color: var(--ski-nordic);
+}
+
+.ski-type-snowboard {
+    border-left: 4px solid #ff9800;
+    background-color: var(--ski-snowboard);
+}
+
+.ski-type-stovler {
+    border-left: 4px solid #4caf50;
+    background-color: var(--ski-boots);
+}
+
+.ski-type-staver {
+    border-left: 4px solid #e91e63;
+    background-color: var(--ski-poles);
+}
+
+/* ============================================================================
+   STATUS BADGES
+   ============================================================================ */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+.badge-ledig {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-utlant {
+    background-color: var(--warning-color);
+    color: var(--text-primary);
+}
+
+.badge-forsinket {
+    background-color: var(--danger-color);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* ============================================================================
+   TABLE STYLES
+   ============================================================================ */
+.table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.table thead th {
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* ============================================================================
+   FORM STYLES
+   ============================================================================ */
+.form-control,
+.form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label.required::after {
+    content: " *";
+    color: var(--danger-color);
+}
+
+/* ============================================================================
+   SEARCH AND FILTER STYLES
+   ============================================================================ */
+.search-bar {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================================
+   STATISTICS CARDS
+   ============================================================================ */
+.stat-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ============================================================================
+   LOADING AND ANIMATIONS
+   ============================================================================ */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Fade in animation for cards */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================================
+   RESPONSIVE STYLES
+   ============================================================================ */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+    .navbar,
+    .card-footer,
+    .btn {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* ============================================================================
+   DARK MODE (TODO for gruppen - avansert)
+   ============================================================================ */
+/*
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-light: #212529;
+        --bg-white: #343a40;
+        --text-primary: #ffffff;
+        --text-secondary: #adb5bd;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+    }
+
+    .card {
+        background-color: var(--bg-white);
+        color: var(--text-primary);
+    }
+
+    .navbar {
+        background-color: var(--bg-white) !important;
+    }
+}
+*/
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+.text-ski-alpine { color: #2196f3; }
+.text-ski-langrenn { color: #9c27b0; }
+.text-ski-snowboard { color: #ff9800; }
+.text-ski-stovler { color: #4caf50; }
+.text-ski-staver { color: #e91e63; }
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+.shadow-custom {
+    box-shadow: var(--shadow-md);
+}
+
+.border-radius-custom {
+    border-radius: var(--border-radius);
+}
+
+/* ============================================================================
+   CUSTOM COMPONENTS (TODO for gruppen)
+   ============================================================================ */
+
+/* Ski equipment status indicator */
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.status-indicator.available { background-color: var(--success-color); }
+.status-indicator.rented { background-color: var(--warning-color); }
+.status-indicator.maintenance { background-color: var(--danger-color); }
+
+/* Timeline component for loan history */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--primary-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+/* TODO for gruppen: Legg til flere custom komponenter etter behov */
