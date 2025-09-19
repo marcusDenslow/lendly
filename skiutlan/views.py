@@ -19,7 +19,7 @@ def hjem(request):
         'totalt_ski_items': SkiItem.objects.count(),
         'ledige_items': SkiItem.objects.exclude(id__in=Utlan.objects.filter(returnert_dato__isnull=True).values_list('ski_item_id', flat=True)).count(),
         'aktive_utlan': Utlan.objects.filter(returnert_dato__isnull=True).count(),
-        'forsinket_utlan': Utlan.objects.filter(returnert_dato__isnull=True, planlagt_retur__lt=date.today())[:5],
+        'forsinket_utlan': Utlan.objects.filter(returnert_dato__isnull=True, planlagt_retur__lt=timezone.now())[:5],
         'nylige_utlan': Utlan.objects.order_by('-utlant_dato')[:5],
     }
 
@@ -268,7 +268,7 @@ def utlan_liste(request):
     elif status_filter == 'returnerte':
         utlan = utlan.filter(returnert_dato__isnull=False)
     elif status_filter == 'forsinket':
-        utlan = utlan.filter(returnert_dato__isnull=True, planlagt_retur__lt=date.today())
+        utlan = utlan.filter(returnert_dato__isnull=True, planlagt_retur__lt=timezone.now())
 
     # Søk
     sok_tekst = request.GET.get('sok', '')
@@ -343,8 +343,8 @@ def utlan_opprett_for_item(request, item_id):
 
             # Konverter dato-string til datetime.date
             from datetime import datetime
-            planlagt_retur_date = datetime.strptime(planlagt_retur, '%Y-%m-%d').date()
-            print(f"DEBUG: Dato konvertert til: {planlagt_retur_date}")
+            planlagt_retur_datetime = datetime.strptime(planlagt_retur, '%Y-%m-%dT%H:%M')
+            print(f"DEBUG: Dato konvertert til: {planlagt_retur_datetime}")
 
             # Sjekk om ski_item allerede er utlånt
             eksisterende_utlan = Utlan.objects.filter(ski_item=ski_item, returnert_dato__isnull=True)
@@ -354,14 +354,14 @@ def utlan_opprett_for_item(request, item_id):
                 return redirect('skiutlan:ski_item_detalj', item_id=ski_item.id)
 
             # Lag utlån direkte
-            print(f"DEBUG: Lager utlån med bruker={bruker}, ski_item={ski_item}, planlagt_retur={planlagt_retur_date}")
+            print(f"DEBUG: Lager utlån med bruker={bruker}, ski_item={ski_item}, planlagt_retur={planlagt_retur_datetime}")
 
             from django.db import transaction
             with transaction.atomic():
                 utlan = Utlan(
                     bruker=bruker,
                     ski_item=ski_item,
-                    planlagt_retur=planlagt_retur_date
+                    planlagt_retur=planlagt_retur_datetime
                 )
 
                 # Eksplisitt sett utlant_dato
@@ -485,8 +485,7 @@ def avansert_sok(request):
         elif utlan_status == 'returnerte':
             utlan_qs = utlan_qs.filter(returnert_dato__isnull=False)
         elif utlan_status == 'forsinket':
-            from datetime import date
-            utlan_qs = utlan_qs.filter(returnert_dato__isnull=True, planlagt_retur__lt=date.today())
+            utlan_qs = utlan_qs.filter(returnert_dato__isnull=True, planlagt_retur__lt=timezone.now())
 
         # Dato filtrering
         if dato_fra:
@@ -529,7 +528,7 @@ def rapporter(request):
         'aktive_utlan': Utlan.objects.filter(returnert_dato__isnull=True).count(),
         'forsinket_utlan': Utlan.objects.filter(
             returnert_dato__isnull=True,
-            planlagt_retur__lt=date.today()
+            planlagt_retur__lt=timezone.now()
         ).count(),
     }
 

@@ -211,7 +211,7 @@
                                     <div class="fw-bold text-danger">{{ utlan.ski_item.navn }}</div>
                                     <small class="text-muted">
                                         {{ utlan.bruker.fullt_navn }} -
-                                        Skulle vært returnert {{ utlan.planlagt_retur|date:"d.m.Y" }}
+                                        Skulle vært returnert {{ utlan.planlagt_retur|date:"d.m.Y H:i" }}
                                     </small>
                                 </div>
                                 <a href="{% url 'skiutlan:utlan_detalj' utlan.id %}" class="btn btn-sm btn-outline-danger">

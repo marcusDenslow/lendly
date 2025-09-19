@@ -57,13 +57,12 @@
                                 </a>
                             </td>
                             <td>{{ utlan_item.utlant_dato|date:"d.m.Y" }}</td>
-                            <td>{{ utlan_item.planlagt_retur|date:"d.m.Y" }}</td>
+                            <td>{{ utlan_item.planlagt_retur|date:"d.m.Y H:i" }}</td>
                             <td>
                                 {% if utlan_item.returnert_dato %}
                                     <span class="badge bg-success">Returnert</span>
                                 {% else %}
-                                    {% now "Y-m-d" as today %}
-                                    {% if utlan_item.planlagt_retur|date:"Y-m-d" < today %}
+                                    {% if utlan_item.er_forsinket %}
                                         <span class="badge bg-danger">Forsinket</span>
                                     {% else %}
                                         <span class="badge bg-warning">Aktiv</span>

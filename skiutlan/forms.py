@@ -136,9 +136,9 @@ class UtlanForm(forms.ModelForm):
             'ski_item': forms.Select(attrs={
                 'class': 'form-control'
             }),
-            'planlagt_retur': forms.DateInput(attrs={
+            'planlagt_retur': forms.DateTimeInput(attrs={
                 'class': 'form-control',
-                'type': 'date'
+                'type': 'datetime-local'
             }),
         }
         labels = {
@@ -153,7 +153,9 @@ class UtlanForm(forms.ModelForm):
 
         # Sett default planlagt_retur til 1 uke frem
         if not self.instance.pk:  # Bare for nye utlån
-            self.fields['planlagt_retur'].initial = date.today() + timedelta(days=7)
+            default_time = timezone.now() + timedelta(days=7)
+            default_time = default_time.replace(second=0, microsecond=0)
+            self.fields['planlagt_retur'].initial = default_time
 
         # Filtrer ski_items til bare ledige
         ledige_items = []
@@ -171,7 +173,8 @@ class UtlanForm(forms.ModelForm):
         """Validerer at planlagt retur ikke er i fortiden."""
         planlagt_retur = self.cleaned_data.get('planlagt_retur')
 
-        if planlagt_retur and planlagt_retur < date.today():
+        current_time = timezone.now().replace(second=0, microsecond=0)
+        if planlagt_retur and planlagt_retur < current_time:
             raise ValidationError('Planlagt retur kan ikke være i fortiden.')
 
         return planlagt_retur

@@ -17,10 +17,9 @@
                         <p><strong>Bruker:</strong> {{ utlan.bruker.fornavn }} {{ utlan.bruker.etternavn }}</p>
                         <p><strong>Ski-utstyr:</strong> {{ utlan.ski_item.navn }}</p>
                         <p><strong>Utlånt:</strong> {{ utlan.utlant_dato|date:"d.m.Y H:i" }}</p>
-                        <p><strong>Planlagt retur:</strong> {{ utlan.planlagt_retur|date:"d.m.Y" }}</p>
+                        <p><strong>Planlagt retur:</strong> {{ utlan.planlagt_retur|date:"d.m.Y H:i" }}</p>
 
-                        {% now "Y-m-d" as today %}
-                        {% if utlan.planlagt_retur|date:"Y-m-d" < today %}
+                        {% if utlan.er_forsinket %}
                             <div class="alert alert-warning">
                                 <strong>Merk:</strong> Dette utlånet er forsinket med {{ utlan.planlagt_retur|timesince }}.
                             </div>

@@ -152,7 +152,7 @@ class Utlan(models.Model):
     bruker = models.ForeignKey(Bruker, on_delete=models.CASCADE)
     ski_item = models.ForeignKey(SkiItem, on_delete=models.CASCADE)
     utlant_dato = models.DateTimeField(auto_now_add=True)
-    planlagt_retur = models.DateField()
+    planlagt_retur = models.DateTimeField()
     returnert_dato = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
@@ -167,8 +167,9 @@ class Utlan(models.Model):
         """Sjekker om utlånet er forsinket."""
         if self.returnert_dato:
             return False
-        from datetime import date
-        return self.planlagt_retur < date.today()
+        from django.utils import timezone
+        current_time = timezone.now().replace(second=0, microsecond=0)
+        return self.planlagt_retur < current_time
 
     @property
     def varighet(self):
