@@ -67,7 +67,8 @@ class UtlanAdmin(admin.ModelAdmin):
     4. Vurder å lage en custom action for å markere som returnert
     """
 
-    list_display = ['bruker', 'ski_item', 'utlant_dato', 'planlagt_retur', 'er_aktivt', 'er_forsinket']
+    list_display = ['bruker', 'ski_item', 'utlant_dato',
+                    'planlagt_retur', 'er_aktivt', 'er_forsinket']
     search_fields = ['bruker__fornavn', 'bruker__etternavn', 'ski_item__navn']
     list_filter = ['utlant_dato', 'planlagt_retur', 'returnert_dato']
     readonly_fields = ['utlant_dato', 'varighet']
@@ -106,11 +107,3 @@ class UtlanAdmin(admin.ModelAdmin):
         pass
 
     marker_som_returnert.short_description = "Marker valgte utlån som returnert"
-
-
-# TODO for gruppen: Vurder å lage inline-views
-# class UtlanInline(admin.TabularInline):
-#     """Viser utlån direkte i bruker eller ski-item admin."""
-#     model = Utlan
-#     extra = 0  # Ikke vis tomme skjemaer
-#     readonly_fields = ['opprettet']
