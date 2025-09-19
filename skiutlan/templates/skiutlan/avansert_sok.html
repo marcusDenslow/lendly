@@ -1,0 +1,19 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Avansert søk - Skiutlån System{% endblock %}
+
+{% block content %}
+<h1>Avansert søk</h1>
+
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">Avansert søkefunksjonalitet kommer snart!</p>
+        <p>I mellomtiden kan du bruke søkefunksjonene på de enkelte sidene:</p>
+        <ul>
+            <li><a href="{% url 'skiutlan:ski_item_liste' %}">Søk i ski-utstyr</a></li>
+            <li><a href="{% url 'skiutlan:bruker_liste' %}">Søk i brukere</a></li>
+            <li><a href="{% url 'skiutlan:utlan_liste' %}">Søk i utlån</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

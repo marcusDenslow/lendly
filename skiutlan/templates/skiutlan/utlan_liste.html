@@ -1,0 +1,94 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Utlån - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Utlån</h1>
+    <a href="{% url 'skiutlan:utlan_opprett' %}" class="btn btn-primary">Nytt utlån</a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="sok" class="form-control me-2" placeholder="Søk etter bruker eller ski-utstyr..." value="{{ sok_tekst }}">
+            <button type="submit" class="btn btn-outline-secondary">Søk</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <select name="status" class="form-control me-2" onchange="this.form.submit()">
+                <option value="">Alle utlån</option>
+                <option value="aktive" {% if status_filter == 'aktive' %}selected{% endif %}>Aktive utlån</option>
+                <option value="returnerte" {% if status_filter == 'returnerte' %}selected{% endif %}>Returnerte utlån</option>
+                <option value="forsinket" {% if status_filter == 'forsinket' %}selected{% endif %}>Forsinket utlån</option>
+            </select>
+            <input type="hidden" name="sok" value="{{ sok_tekst }}">
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if utlan %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Bruker</th>
+                            <th>Ski-utstyr</th>
+                            <th>Utlånt</th>
+                            <th>Planlagt retur</th>
+                            <th>Status</th>
+                            <th>Handlinger</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for utlan_item in utlan %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'skiutlan:bruker_detalj' utlan_item.bruker.id %}" class="text-decoration-none">
+                                    {{ utlan_item.bruker.fornavn }} {{ utlan_item.bruker.etternavn }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'skiutlan:ski_item_detalj' utlan_item.ski_item.id %}" class="text-decoration-none">
+                                    {{ utlan_item.ski_item.navn }}
+                                </a>
+                            </td>
+                            <td>{{ utlan_item.utlant_dato|date:"d.m.Y" }}</td>
+                            <td>{{ utlan_item.planlagt_retur|date:"d.m.Y" }}</td>
+                            <td>
+                                {% if utlan_item.returnert_dato %}
+                                    <span class="badge bg-success">Returnert</span>
+                                {% else %}
+                                    {% now "Y-m-d" as today %}
+                                    {% if utlan_item.planlagt_retur|date:"Y-m-d" < today %}
+                                        <span class="badge bg-danger">Forsinket</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Aktiv</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'skiutlan:utlan_detalj' utlan_item.id %}" class="btn btn-outline-primary">Se</a>
+                                    {% if not utlan_item.returnert_dato %}
+                                        <a href="{% url 'skiutlan:utlan_marker_returnert' utlan_item.id %}" class="btn btn-outline-success">Returner</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <p class="text-muted">Ingen utlån funnet.</p>
+                <a href="{% url 'skiutlan:utlan_opprett' %}" class="btn btn-primary">Opprett første utlån</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

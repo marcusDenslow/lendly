@@ -1,0 +1,36 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Slett {{ bruker.fornavn }} {{ bruker.etternavn }} - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h2>Bekreft sletting</h2>
+            </div>
+            <div class="card-body">
+                <p>Er du sikker på at du vil slette brukeren <strong>{{ bruker.fornavn }} {{ bruker.etternavn }}</strong>?</p>
+
+                <div class="alert alert-warning">
+                    <strong>Advarsel:</strong> Denne handlingen kan ikke angres!
+                </div>
+
+                <p><strong>Brukerdetaljer:</strong></p>
+                <ul>
+                    <li>Navn: {{ bruker.fornavn }} {{ bruker.etternavn }}</li>
+                    <li>Telefon: {{ bruker.telefon }}</li>
+                    <li>E-post: {{ bruker.epost|default:"Ikke oppgitt" }}</li>
+                    <li>Registrert: {{ bruker.registrert|date:"d.m.Y" }}</li>
+                </ul>
+
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Ja, slett bruker</button>
+                </form>
+                <a href="{% url 'skiutlan:bruker_detalj' bruker.id %}" class="btn btn-secondary">Avbryt</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

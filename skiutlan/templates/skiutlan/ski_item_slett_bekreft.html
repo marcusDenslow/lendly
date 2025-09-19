@@ -1,0 +1,35 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Slett {{ ski_item.navn }} - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h2>Bekreft sletting</h2>
+            </div>
+            <div class="card-body">
+                <p>Er du sikker på at du vil slette <strong>{{ ski_item.navn }}</strong>?</p>
+
+                <div class="alert alert-warning">
+                    <strong>Advarsel:</strong> Denne handlingen kan ikke angres!
+                </div>
+
+                <p><strong>Detaljer:</strong></p>
+                <ul>
+                    <li>Type: {{ ski_item.get_type_ski_display }}</li>
+                    <li>Størrelse: {{ ski_item.storrelse }}{% if ski_item.type_ski == 'stovler' %}EU{% else %}cm{% endif %}</li>
+                    <li>Tilstand: {{ ski_item.get_tilstand_display }}</li>
+                </ul>
+
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Ja, slett</button>
+                </form>
+                <a href="{% url 'skiutlan:ski_item_detalj' ski_item.id %}" class="btn btn-secondary">Avbryt</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

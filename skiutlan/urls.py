@@ -1,24 +1,3 @@
-"""
-URL konfigurasjon for skiutlån-systemet.
-
-Denne filen definerer alle URL-ruter for applikasjonen.
-URL-mønstre følger RESTful prinsipper for konsistens.
-
-URL-struktur:
-- / - Hjemside
-- /ski/ - Ski-item operasjoner
-- /brukere/ - Bruker operasjoner
-- /utlan/ - Utlån operasjoner
-- /sok/ - Søkefunksjonalitet
-- /rapporter/ - Rapporter og statistikk
-- /api/ - API endpoints
-
-TODO for gruppen:
-1. Teste alle URL-er etter implementering
-2. Legg til URL-navngivning for enkelt reverse lookup
-3. Vurder å gruppere relaterte URLs
-4. Implementer URL-parametere validering
-"""
 
 from django.urls import path
 from . import views
@@ -37,15 +16,14 @@ urlpatterns = [
     # ========================================================================
 
     # Liste og søk
-    path('ski/', views.ski_item_liste, name='ski_item_liste'),
-
-    # Detail view
-    path('ski/<int:item_id>/', views.ski_item_detalj, name='ski_item_detalj'),
+    path('ski-items/', views.ski_item_liste, name='ski_item_liste'),
+    path('ski-items/<int:item_id>/', views.ski_item_detalj, name='ski_item_detalj'),
 
     # Create, Update, Delete
-    path('ski/ny/', views.ski_item_opprett, name='ski_item_opprett'),
-    path('ski/<int:item_id>/rediger/', views.ski_item_rediger, name='ski_item_rediger'),
-    path('ski/<int:item_id>/slett/', views.ski_item_slett, name='ski_item_slett'),
+    path('ski-items/opprett/', views.ski_item_opprett, name='ski_item_opprett'),
+    path('ski-items/<int:item_id>/rediger/',
+         views.ski_item_rediger, name='ski_item_rediger'),
+    path('ski-items/<int:item_id>/slett/', views.ski_item_slett, name='ski_item_slett'),
 
     # TODO for gruppen: Legg til flere ski-item URLs
     # path('ski/<int:item_id>/historikk/', views.ski_item_historikk, name='ski_item_historikk'),
@@ -62,9 +40,11 @@ urlpatterns = [
     path('brukere/<int:bruker_id>/', views.bruker_detalj, name='bruker_detalj'),
 
     # Create, Update, Delete
-    path('brukere/ny/', views.bruker_opprett, name='bruker_opprett'),
-    path('brukere/<int:bruker_id>/rediger/', views.bruker_rediger, name='bruker_rediger'),
-    path('brukere/<int:bruker_id>/slett/', views.bruker_slett, name='bruker_slett'),
+    path('brukere/opprett/', views.bruker_opprett, name='bruker_opprett'),
+    path('brukere/<int:bruker_id>/rediger/',
+         views.bruker_rediger, name='bruker_rediger'),
+    path('brukere/<int:bruker_id>/slett/',
+         views.bruker_slett, name='bruker_slett'),
 
     # TODO for gruppen: Legg til bruker-spesifikke URLs
     # path('brukere/<int:bruker_id>/utlan/', views.bruker_utlan_liste, name='bruker_utlan'),
@@ -81,11 +61,13 @@ urlpatterns = [
     path('utlan/<int:utlan_id>/', views.utlan_detalj, name='utlan_detalj'),
 
     # Create - generelt og spesifikt for item
-    path('utlan/ny/', views.utlan_opprett, name='utlan_opprett'),
-    path('utlan/ny/<int:item_id>/', views.utlan_opprett_for_item, name='utlan_opprett_for_item'),
+    path('utlan/opprett/', views.utlan_opprett, name='utlan_opprett'),
+    path('utlan/opprett/<int:item_id>/', views.utlan_opprett_for_item,
+         name='utlan_opprett_for_item'),
 
     # Special actions
-    path('utlan/<int:utlan_id>/returner/', views.utlan_marker_returnert, name='utlan_marker_returnert'),
+    path('utlan/<int:utlan_id>/returner/',
+         views.utlan_marker_returnert, name='utlan_marker_returnert'),
 
     # TODO for gruppen: Legg til flere utlån URLs
     # path('utlan/<int:utlan_id>/forleng/', views.utlan_forleng, name='utlan_forleng'),

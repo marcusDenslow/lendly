@@ -1,0 +1,81 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}{{ action }} - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ action }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.fornavn.id_for_label }}" class="form-label">{{ form.fornavn.label }}</label>
+                        {{ form.fornavn }}
+                        {% if form.fornavn.errors %}
+                            <div class="text-danger">
+                                {% for error in form.fornavn.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.etternavn.id_for_label }}" class="form-label">{{ form.etternavn.label }}</label>
+                        {{ form.etternavn }}
+                        {% if form.etternavn.errors %}
+                            <div class="text-danger">
+                                {% for error in form.etternavn.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.telefon.id_for_label }}" class="form-label">{{ form.telefon.label }}</label>
+                        {{ form.telefon }}
+                        {% if form.telefon.errors %}
+                            <div class="text-danger">
+                                {% for error in form.telefon.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.epost.id_for_label }}" class="form-label">{{ form.epost.label }}</label>
+                        {{ form.epost }}
+                        {% if form.epost.errors %}
+                            <div class="text-danger">
+                                {% for error in form.epost.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Lagre</button>
+                        <a href="{% if bruker %}{% url 'skiutlan:bruker_detalj' bruker.id %}{% else %}{% url 'skiutlan:bruker_liste' %}{% endif %}" class="btn btn-secondary">Avbryt</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

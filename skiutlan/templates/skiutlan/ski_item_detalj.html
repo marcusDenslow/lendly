@@ -1,0 +1,72 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}{{ ski_item.navn }} - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>{{ ski_item.navn }}</h2>
+                <div>
+                    {% if er_ledig %}
+                        <span class="badge bg-success">Ledig</span>
+                    {% else %}
+                        <span class="badge bg-danger">Utlånt</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Type:</strong> {{ ski_item.get_type_ski_display }}</p>
+                        <p><strong>Størrelse:</strong> {{ ski_item.storrelse }}
+                        {% if ski_item.type_ski == 'stovler' %}EU{% else %}cm{% endif %}</p>
+                        <p><strong>Tilstand:</strong> {{ ski_item.get_tilstand_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Opprettet:</strong> {{ ski_item.opprettet|date:"d.m.Y H:i" }}</p>
+                        <p><strong>Sist oppdatert:</strong> {{ ski_item.oppdatert|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{% url 'skiutlan:ski_item_rediger' ski_item.id %}" class="btn btn-primary">Rediger</a>
+                    {% if er_ledig %}
+                        <a href="{% url 'skiutlan:utlan_opprett_for_item' ski_item.id %}" class="btn btn-success">Lån ut</a>
+                    {% endif %}
+                    <a href="{% url 'skiutlan:ski_item_slett' ski_item.id %}" class="btn btn-danger">Slett</a>
+                    <a href="{% url 'skiutlan:ski_item_liste' %}" class="btn btn-secondary">Tilbake til liste</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Utlånshistorikk</h5>
+            </div>
+            <div class="card-body">
+                {% if utlan_historikk %}
+                    {% for utlan in utlan_historikk %}
+                        <div class="border-bottom pb-2 mb-2">
+                            <p class="mb-1"><strong>{{ utlan.bruker.fornavn }} {{ utlan.bruker.etternavn }}</strong></p>
+                            <small class="text-muted">
+                                {{ utlan.utlant_dato|date:"d.m.Y" }} -
+                                {% if utlan.returnert_dato %}
+                                    {{ utlan.returnert_dato|date:"d.m.Y" }}
+                                {% else %}
+                                    <span class="text-danger">Aktiv</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Ingen utlånshistorikk</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

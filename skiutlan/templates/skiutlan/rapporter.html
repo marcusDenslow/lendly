@@ -1,0 +1,76 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Rapporter - Skiutlån System{% endblock %}
+
+{% block content %}
+<h1>Rapporter og Statistikk</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Totalt ski-utstyr</h5>
+                <h2 class="text-primary">{{ totalt_ski_items }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Registrerte brukere</h5>
+                <h2 class="text-info">{{ totalt_brukere }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Aktive utlån</h5>
+                <h2 class="text-warning">{{ aktive_utlan }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Forsinket utlån</h5>
+                <h2 class="text-danger">{{ forsinket_utlan }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Hurtighandlinger</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'skiutlan:ski_item_liste' %}?ledig=on" class="btn btn-outline-primary w-100 mb-2">
+                            Se ledige ski-items
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'skiutlan:utlan_liste' %}?status=aktive" class="btn btn-outline-warning w-100 mb-2">
+                            Se aktive utlån
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'skiutlan:utlan_liste' %}?status=forsinket" class="btn btn-outline-danger w-100 mb-2">
+                            Se forsinket utlån
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'skiutlan:avansert_sok' %}" class="btn btn-outline-secondary w-100 mb-2">
+                            Avansert søk
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

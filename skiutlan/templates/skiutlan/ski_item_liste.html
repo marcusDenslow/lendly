@@ -157,15 +157,11 @@
                                 </span>
                             </td>
                             <td>
-                                {% comment %}
-                                TODO: Implementer er_ledig property i models.py
                                 {% if item.er_ledig %}
                                     <span class="badge bg-success">Ledig</span>
                                 {% else %}
                                     <span class="badge bg-warning">Utlånt</span>
                                 {% endif %}
-                                {% endcomment %}
-                                <span class="badge bg-secondary">Ukjent</span>
                             </td>
                             <td class="text-muted">
                                 {{ item.opprettet|date:"d.m.Y" }}

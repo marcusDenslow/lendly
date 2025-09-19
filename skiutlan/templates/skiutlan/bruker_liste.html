@@ -1,0 +1,65 @@
+{% extends 'skiutlan/base.html' %}
+
+{% block title %}Brukere - Skiutlån System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Brukere</h1>
+    <a href="{% url 'skiutlan:bruker_opprett' %}" class="btn btn-primary">Ny bruker</a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="sok" class="form-control me-2" placeholder="Søk etter navn eller telefon..." value="{{ sok_tekst }}">
+            <button type="submit" class="btn btn-outline-secondary">Søk</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if brukere %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Navn</th>
+                            <th>Telefon</th>
+                            <th>E-post</th>
+                            <th>Registrert</th>
+                            <th>Handlinger</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bruker in brukere %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'skiutlan:bruker_detalj' bruker.id %}" class="text-decoration-none">
+                                    {{ bruker.fornavn }} {{ bruker.etternavn }}
+                                </a>
+                            </td>
+                            <td>{{ bruker.telefon }}</td>
+                            <td>{{ bruker.epost|default:"-" }}</td>
+                            <td>{{ bruker.registrert|date:"d.m.Y" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'skiutlan:bruker_detalj' bruker.id %}" class="btn btn-outline-primary">Se</a>
+                                    <a href="{% url 'skiutlan:bruker_rediger' bruker.id %}" class="btn btn-outline-secondary">Rediger</a>
+                                    <a href="{% url 'skiutlan:utlan_opprett' %}?bruker={{ bruker.id }}" class="btn btn-outline-success">Nytt utlån</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <p class="text-muted">Ingen brukere funnet.</p>
+                <a href="{% url 'skiutlan:bruker_opprett' %}" class="btn btn-primary">Opprett første bruker</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
