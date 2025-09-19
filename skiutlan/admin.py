@@ -1,6 +1,26 @@
 
 from django.contrib import admin
 from .models import SkiItem, Bruker, Utlan
+from django.utils import timezone
+
+
+# Custom filter for å vise aktive/returnerte utlån
+class AktiveFilter(admin.SimpleListFilter):
+    title = 'Status'
+    parameter_name = 'aktiv'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('ja', 'Kun aktive utlån'),
+            ('nei', 'Kun returnerte utlån'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'ja':
+            return queryset.filter(returnert_dato__isnull=True)
+        if self.value() == 'nei':
+            return queryset.filter(returnert_dato__isnull=False)
+        return queryset
 
 
 @admin.register(SkiItem)
@@ -34,11 +54,6 @@ class SkiItemAdmin(admin.ModelAdmin):
 class BrukerAdmin(admin.ModelAdmin):
     """
     Admin-konfigurasjon for Bruker modellen.
-
-    TODO for gruppen:
-    1. Konfigurer list_display for å vise viktig brukerinformasjon
-    2. Legg til søkefunksjonalitet på navn og telefon
-    3. Vurder å vise antall aktive utlån i listen
     """
 
     list_display = ['fornavn', 'etternavn', 'telefon', 'epost', 'aktive_utlan']
@@ -59,20 +74,12 @@ class BrukerAdmin(admin.ModelAdmin):
 class UtlanAdmin(admin.ModelAdmin):
     """
     Admin-konfigurasjon for Utlan modellen.
-
-    TODO for gruppen:
-    1. Vis viktig utlånsinformasjon i listen
-    2. Legg til filtrering på status (aktiv/returnert)
-    3. Legg til datofiltrering
-    4. Vurder å lage en custom action for å markere som returnert
     """
 
     list_display = ['bruker', 'ski_item', 'utlant_dato', 'planlagt_retur', 'er_aktivt', 'er_forsinket']
     search_fields = ['bruker__fornavn', 'bruker__etternavn', 'ski_item__navn']
-    list_filter = ['utlant_dato', 'planlagt_retur', 'returnert_dato']
+    list_filter = [AktiveFilter, 'utlant_dato', 'planlagt_retur', 'returnert_dato']
     readonly_fields = ['utlant_dato', 'varighet']
-
-    # Sortering - nyeste først
     ordering = ['-utlant_dato']
 
     # Organiser feltene
@@ -83,29 +90,20 @@ class UtlanAdmin(admin.ModelAdmin):
         ('Datoer', {
             'fields': ('utlant_dato', 'planlagt_retur', 'returnert_dato')
         }),
-        # TODO: Legg til metadata seksjon
     )
 
-    # TODO: Implementer custom actions
-    # actions = ['marker_som_returnert']
+    # Custom action for å markere utlån som returnert
+    actions = ['marker_som_returnert']
 
     def marker_som_returnert(self, request, queryset):
         """
-        Custom admin action for å markere utlån som returnert.
-
-        TODO for gruppen:
-        1. Iterer gjennom queryset (valgte utlån)
-        2. Sett returnert_dato til timezone.now() for hvert utlån
-        3. Lagre endringene
-        4. Vis en success-melding
-
-        Hint:
-        from django.utils import timezone
-        from django.contrib import messages
+        Marker valgte utlån som returnert.
         """
-        pass
+        updated = queryset.update(returnert_dato=timezone.now())
+        self.message_user(request, f"{updated} utlån ble markert som returnert.")
 
     marker_som_returnert.short_description = "Marker valgte utlån som returnert"
+
 
 
 # TODO for gruppen: Vurder å lage inline-views
