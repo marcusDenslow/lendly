@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -434,7 +435,91 @@ def utlan_marker_returnert(request, utlan_id):
 # ============================================================================
 
 def avansert_sok(request):
-    return render(request, 'skiutlan/avansert_sok.html')
+    sok_tekst = request.GET.get('sok_tekst', '').strip()
+    ski_type = request.GET.get('ski_type', '')
+    tilstand = request.GET.get('tilstand', '')
+    utlan_status = request.GET.get('utlan_status', '')
+    dato_fra = request.GET.get('dato_fra', '')
+    dato_til = request.GET.get('dato_til', '')
+
+    ski_items = []
+    brukere = []
+    utlan = []
+
+    #bare om det er noe som blir søkt
+    if any([sok_tekst, ski_type, tilstand, utlan_status, dato_fra, dato_til]):
+
+        # søk i ski-items
+        ski_items_qs = SkiItem.objects.all()
+        if sok_tekst:
+            ski_items_qs = ski_items_qs.filter(
+                Q(navn__icontains=sok_tekst) |
+                Q(type_ski__icontains=sok_tekst)
+            )
+        if ski_type:
+            ski_items_qs = ski_items_qs.filter(type_ski=ski_type)
+        if tilstand:
+            ski_items_qs = ski_items_qs.filter(tilstand=tilstand)
+        ski_items = ski_items_qs[:20]
+
+        
+        # søk i brukere
+        if sok_tekst:
+            brukere = Bruker.objects.filter(
+                Q(fornavn__icontains=sok_tekst) |
+                Q(etternavn__icontains=sok_tekst) |
+                Q(telefon__icontains=sok_tekst) | 
+                Q(epost__icontains=sok_tekst)
+            )[:20]
+
+        # søk i utlan
+        utlan_qs = Utlan.objects.all()
+        if sok_tekst:
+            utlan_qs = utlan_qs.filter(
+                Q(bruker__fornavn__icontains=sok_tekst) |
+                Q(bruker__etternavn__icontains=sok_tekst) |
+                Q(ski_item__navn__icontains=sok_tekst)
+            )
+        if utlan_status == 'aktive':
+            utlan_qs = utlan_qs.filter(returnert_dato__isnull=True)
+        elif utlan_status == 'returnerte':
+            utlan_qs = utlan_qs.filter(returnert_dato__isnull=False)
+        elif utlan_status == 'forsinket':
+            from datetime import date
+            utlan_qs = utlan_qs.filter(returnert_dato__isnull=True, planlagt_retur__lt=date.today())
+
+        # Dato filtrering
+        if dato_fra:
+            from datetime import datetime
+            dato_fra_obj = datetime.strptime(dato_fra, '%Y-%m-%d').date()
+            utlan_qs = utlan_qs.filter(utlant_dato__date__gte=dato_fra_obj)
+        if dato_til:
+            from datetime import datetime
+            dato_til_obj = datetime.strptime(dato_til, '%Y-%m-%d').date()
+            utlan_qs = utlan_qs.filter(utlant_dato__date__lte=dato_til_obj)
+
+        utlan = utlan_qs.order_by('returnert_dato', '-utlant_dato')[:20]
+
+
+    context = {
+        'ski_items': ski_items,
+        'brukere': brukere,
+        'utlan': utlan,
+
+        'sok_tekst': sok_tekst,
+        'ski_type': ski_type,
+        'tilstand': tilstand,
+        'utlan_status': utlan_status,
+        'dato_fra': dato_fra,
+        'dato_til': dato_til,
+
+        'har_sokt': any([sok_tekst, ski_type, tilstand, utlan_status, dato_fra, dato_til]),
+        'totale_resultater': len(ski_items) + len(brukere) + len(utlan)
+    }
+
+    return render(request, 'skiutlan/avansert_sok.html', context)
+
+
 
 
 def rapporter(request):
