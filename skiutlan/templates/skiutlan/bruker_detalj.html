@@ -36,10 +36,15 @@
                         <div class="border-bottom pb-2 mb-2">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <p class="mb-1"><strong>{{ utlan.ski_item.navn }}</strong></p>
+                                    <h6 class="mb-1">{{ utlan.ski_item.navn }}</h6>
                                     <small class="text-muted">
-                                        Lånt: {{ utlan.utlant_dato|date:"d.m.Y" }}<br>
-                                        Planlagt retur: {{ utlan.planlagt_retur|date:"d.m.Y" }}
+                                        {{ utlan.ski_item.get_type_ski_display }} -
+                                        {{ utlan.ski_item.storrelse }}{% if utlan.ski_item.type_ski == 'stovler' %}EU{% else %}cm{% endif %} -
+                                        {{ utlan.ski_item.get_tilstand_display }}
+                                    </small>
+                                    <br>
+                                    <small class="text-muted">
+                                        Lånt: {{ utlan.utlant_dato|date:"d.m.Y" }} | Planlagt retur: {{ utlan.planlagt_retur|date:"d.m.Y" }}
                                     </small>
                                 </div>
                                 <div>
@@ -62,9 +67,15 @@
                 {% if utlan_historie %}
                     {% for utlan in utlan_historie|slice:":5" %}
                         <div class="border-bottom pb-2 mb-2">
-                            <p class="mb-1"><strong>{{ utlan.ski_item.navn }}</strong></p>
+                            <h6 class="mb-1">{{ utlan.ski_item.navn }}</h6>
                             <small class="text-muted">
-                                {{ utlan.utlant_dato|date:"d.m.Y" }} - {{ utlan.returnert_dato|date:"d.m.Y" }}
+                                {{ utlan.ski_item.get_type_ski_display }} -
+                                {{ utlan.ski_item.storrelse }}{% if utlan.ski_item.type_ski == 'stovler' %}EU{% else %}cm{% endif %} -
+                                {{ utlan.ski_item.get_tilstand_display }}
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                Lånt: {{ utlan.utlant_dato|date:"d.m.Y" }} | Returnert: {{ utlan.returnert_dato|date:"d.m.Y" }}
                             </small>
                         </div>
                     {% endfor %}
