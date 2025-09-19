@@ -2,18 +2,162 @@
 
 {% block title %}Avansert søk - Skiutlån System{% endblock %}
 
-{% block content %}
-<h1>Avansert søk</h1>
+{% block header %}
+<div class="row">
+    <div class="col">
+        <h1 class="display-5">
+            <i class="bi bi-search text-primary"></i>
+            Avansert søk
+        </h1>
+        <p class="lead text-muted">
+            Søk på tvers av alle data i systemet med avanserte filtre.
+        </p>
+    </div>
+</div>
+{% endblock %}
 
-<div class="card">
-    <div class="card-body">
-        <p class="text-muted">Avansert søkefunksjonalitet kommer snart!</p>
-        <p>I mellomtiden kan du bruke søkefunksjonene på de enkelte sidene:</p>
-        <ul>
-            <li><a href="{% url 'skiutlan:ski_item_liste' %}">Søk i ski-utstyr</a></li>
-            <li><a href="{% url 'skiutlan:bruker_liste' %}">Søk i brukere</a></li>
-            <li><a href="{% url 'skiutlan:utlan_liste' %}">Søk i utlån</a></li>
-        </ul>
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-funnel"></i>
+                    Søkefiltre
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" action="{% url 'skiutlan:avansert_sok' %}">
+                    <!-- Generell søketekst -->
+                    <div class="mb-3">
+                        <label for="sok_tekst" class="form-label">Søketekst</label>
+                        <input type="text" class="form-control" id="sok_tekst" name="sok_tekst"
+                               placeholder="Søk etter navn, telefon, ski-type...">
+                    </div>
+
+                    <!-- Ski-type filter -->
+                    <div class="mb-3">
+                        <label for="ski_type" class="form-label">Ski-type</label>
+                        <select class="form-control" id="ski_type" name="ski_type">
+                            <option value="">Alle typer</option>
+                            <option value="alpinski">Alpinski</option>
+                            <option value="langrenn">Langrennsski</option>
+                            <option value="snowboard">Snowboard</option>
+                            <option value="stovler">Skistøvler</option>
+                            <option value="staver">Skistaver</option>
+                        </select>
+                    </div>
+
+                    <!-- Tilstand filter -->
+                    <div class="mb-3">
+                        <label for="tilstand" class="form-label">Tilstand</label>
+                        <select class="form-control" id="tilstand" name="tilstand">
+                            <option value="">Alle tilstander</option>
+                            <option value="utmerket">Utmerket</option>
+                            <option value="god">God</option>
+                            <option value="slitt">Slitt</option>
+                            <option value="reparasjon">Trenger reparasjon</option>
+                        </select>
+                    </div>
+
+                    <!-- Utlån status -->
+                    <div class="mb-3">
+                        <label for="utlan_status" class="form-label">Utlån status</label>
+                        <select class="form-control" id="utlan_status" name="utlan_status">
+                            <option value="">Alle</option>
+                            <option value="aktive">Aktive utlån</option>
+                            <option value="returnerte">Returnerte utlån</option>
+                            <option value="forsinket">Forsinket utlån</option>
+                        </select>
+                    </div>
+
+                    <!-- Dato intervall -->
+                    <div class="mb-3">
+                        <label for="dato_fra" class="form-label">Fra dato</label>
+                        <input type="date" class="form-control" id="dato_fra" name="dato_fra">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dato_til" class="form-label">Til dato</label>
+                        <input type="date" class="form-control" id="dato_til" name="dato_til">
+                    </div>
+
+                    <!-- Knapper -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Søk
+                        </button>
+                        <a href="{% url 'skiutlan:avansert_sok' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Nullstill
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Hurtig-lenker -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Hurtig-søk</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'skiutlan:ski_item_liste' %}?ledig=true" class="btn btn-sm btn-success">
+                        <i class="bi bi-check-circle"></i> Ledige ski
+                    </a>
+                    <a href="{% url 'skiutlan:utlan_liste' %}?status=aktive" class="btn btn-sm btn-warning">
+                        <i class="bi bi-arrow-left-right"></i> Aktive utlån
+                    </a>
+                    <a href="{% url 'skiutlan:utlan_liste' %}?status=forsinket" class="btn btn-sm btn-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Forsinket utlån
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-ul"></i>
+                    Søkeresultater
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Her kan man implementere søkeresultater basert på form-data -->
+                <div class="text-center text-muted">
+                    <i class="bi bi-search fs-1"></i>
+                    <p class="mt-3">Bruk søkefiltrene til venstre for å finne det du leter etter.</p>
+
+                    <div class="mt-4">
+                        <h6>Hurtig-navigasjon:</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <a href="{% url 'skiutlan:ski_item_liste' %}" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-snow"></i> Alle ski-items
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <a href="{% url 'skiutlan:bruker_liste' %}" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-people"></i> Alle brukere
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <a href="{% url 'skiutlan:utlan_liste' %}" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-arrow-left-right"></i> Alle utlån
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <a href="{% url 'skiutlan:rapporter' %}" class="btn btn-outline-info w-100">
+                                    <i class="bi bi-graph-up"></i> Rapporter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
