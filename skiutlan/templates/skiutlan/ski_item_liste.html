@@ -157,11 +157,19 @@
                                 </span>
                             </td>
                             <td>
-                                {% if item.er_ledig %}
-                                    <span class="badge bg-success">Ledig</span>
-                                {% else %}
-                                    <span class="badge bg-warning">Utlånt</span>
-                                {% endif %}
+								{% if item.er_ledig %}
+									<span class="badge bg-success">Ledig</span>
+								{% else %}
+									{% for utlan in item.utlan_set.all %}
+										{% if not utlan.returnert_dato %}
+											{% if utlan.er_forsinket %}
+												<span class="badge bg-danger">Forsinket</span>
+											{% else %}
+												<span class="badge bg-warning">Utlånt</span>
+											{% endif %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
                             </td>
                             <td class="text-muted">
                                 {{ item.opprettet|date:"d.m.Y" }}
